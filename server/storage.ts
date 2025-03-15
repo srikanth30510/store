@@ -1,7 +1,8 @@
 import { drizzle } from "drizzle-orm/node-postgres";
 import { users, stores, ratings } from "@shared/schema";
 import { eq, and } from "drizzle-orm";
-import { Pool } from "pg";
+import pg from "pg";
+const { Pool } = pg;
 import session from "express-session";
 import connectPg from "connect-pg-simple";
 import { IStorage } from "./types";
