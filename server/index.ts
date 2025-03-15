@@ -14,6 +14,14 @@ for (const envVar of requiredEnvVars) {
   }
 }
 
+// Log database configuration (without sensitive data)
+console.log('Database Configuration:');
+console.log('Host:', process.env.PGHOST);
+console.log('Database:', process.env.PGDATABASE);
+console.log('User:', process.env.PGUSER);
+console.log('Port:', process.env.PGPORT);
+console.log('Password provided:', !!process.env.PGPASSWORD);
+
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -50,6 +58,7 @@ app.use((req, res, next) => {
 
 (async () => {
   try {
+    console.log('Starting server initialization...');
     const server = await registerRoutes(app);
 
     app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
@@ -61,8 +70,10 @@ app.use((req, res, next) => {
     });
 
     if (app.get("env") === "development") {
+      console.log('Setting up Vite in development mode...');
       await setupVite(app, server);
     } else {
+      console.log('Setting up static serving in production mode...');
       serveStatic(app);
     }
 
@@ -74,10 +85,14 @@ app.use((req, res, next) => {
     }, () => {
       log(`Server is running on port ${port}`);
       log(`Environment: ${app.get("env")}`);
-      log('Make sure your .env file contains all required database credentials');
+      log('Database configuration loaded successfully');
       log('Environment variables loaded:', {
         DATABASE_URL: process.env.DATABASE_URL ? 'Set' : 'Not set',
         SESSION_SECRET: process.env.SESSION_SECRET ? 'Set' : 'Not set',
+        PGHOST: process.env.PGHOST,
+        PGDATABASE: process.env.PGDATABASE,
+        PGUSER: process.env.PGUSER,
+        PGPORT: process.env.PGPORT
       });
     });
   } catch (error) {
