@@ -20,7 +20,9 @@ const pool = new Pool({
   password: process.env.PGPASSWORD,
   database: process.env.PGDATABASE,
   port: parseInt(process.env.PGPORT || "5432"),
-  ssl: false
+  ssl: {
+    rejectUnauthorized: false
+  }
 });
 
 // Test the database connection
