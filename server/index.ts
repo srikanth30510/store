@@ -8,6 +8,8 @@ const requiredEnvVars = ['DATABASE_URL', 'SESSION_SECRET'];
 for (const envVar of requiredEnvVars) {
   if (!process.env[envVar]) {
     console.error(`Error: ${envVar} environment variable is not set`);
+    console.error('Current working directory:', process.cwd());
+    console.error('Make sure your .env file exists in:', process.cwd());
     process.exit(1);
   }
 }
@@ -73,10 +75,15 @@ app.use((req, res, next) => {
       log(`Server is running on port ${port}`);
       log(`Environment: ${app.get("env")}`);
       log('Make sure your .env file contains all required database credentials');
+      log('Environment variables loaded:', {
+        DATABASE_URL: process.env.DATABASE_URL ? 'Set' : 'Not set',
+        SESSION_SECRET: process.env.SESSION_SECRET ? 'Set' : 'Not set',
+      });
     });
   } catch (error) {
     console.error('Failed to start server:', error);
     console.error('Please check your DATABASE_URL and other environment variables');
+    console.error('Current working directory:', process.cwd());
     process.exit(1);
   }
 })();

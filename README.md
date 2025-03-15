@@ -12,21 +12,23 @@ A comprehensive store rating system with role-based access control.
 
 ### Prerequisites
 - Node.js v20 or later
-- A Neon database (Create one at https://neon.tech)
+- PostgreSQL installed locally (via PgAdmin or standalone installation)
 
 ### Database Setup
-1. Create a new project on Neon.tech:
-   - Go to https://neon.tech and sign up/login
-   - Click "Create New Project"
-   - Give your project a name
-   - Select a region close to you
-   - Click "Create Project"
+1. Install PostgreSQL if you haven't already:
+   - Download and install PostgreSQL from https://www.postgresql.org/download/
+   - Install PgAdmin if you want a GUI to manage your database
 
-2. Get your connection credentials:
-   - In your Neon project dashboard, click on "Connection Details"
-   - Select "Nodejs" from the "Connection Type" dropdown
-   - Copy the connection string that looks like: `postgres://username:password@endpoint/dbname?sslmode=require`
-   - Also note down the individual connection parameters (host, database, user, password)
+2. Create a new database:
+   - Using psql:
+     ```sql
+     CREATE DATABASE store_ratings;
+     ```
+   - Or using PgAdmin:
+     1. Right-click on "Databases"
+     2. Select "Create" > "Database"
+     3. Name it "store_ratings"
+     4. Click "Save"
 
 ### Project Setup
 1. Clone the repository
@@ -34,15 +36,18 @@ A comprehensive store rating system with role-based access control.
 ```bash
 cp .env.example .env
 ```
-3. Update the `.env` file with your Neon credentials:
-   - Set `DATABASE_URL` to your full Neon connection string
-   - Fill in the other PG* variables from your Neon dashboard:
-     - `PGHOST`: Your Neon host (ends with .aws.neon.tech)
-     - `PGDATABASE`: Your database name
-     - `PGUSER`: Your database username
+3. Update the `.env` file with your PostgreSQL credentials:
+   - Set `DATABASE_URL` to point to your local database:
+     ```
+     DATABASE_URL=postgresql://postgres:your_password@localhost:5432/store_ratings
+     ```
+   - Update other PG* variables:
+     - `PGHOST`: Usually "localhost"
+     - `PGDATABASE`: "store_ratings"
+     - `PGUSER`: Usually "postgres"
      - `PGPORT`: Usually 5432
-     - `PGPASSWORD`: Your database password
-   - Set `SESSION_SECRET` to a secure random string (e.g., a UUID or a long random string)
+     - `PGPASSWORD`: Your PostgreSQL password
+   - Set `SESSION_SECRET` to a secure random string
 
 4. Install dependencies:
 ```bash
@@ -76,10 +81,10 @@ The application will be available at http://localhost:5000
 ## Troubleshooting
 
 ### Database Connection Issues
-1. Make sure your Neon project is active (green status in dashboard)
-2. Verify all database credentials in your `.env` file
-3. Check that sslmode=require is included in your DATABASE_URL
-4. If using branching, ensure you're connecting to the main branch
+1. Check that PostgreSQL is running locally
+2. Verify your database credentials in `.env`
+3. Make sure the database exists
+4. Try connecting using psql or PgAdmin with the same credentials
 
 ### Authentication Issues
 1. Verify your SESSION_SECRET is set in `.env`
