@@ -1,8 +1,7 @@
 import { drizzle } from "drizzle-orm/node-postgres";
 import { users, stores, ratings } from "@shared/schema";
 import { eq, and } from "drizzle-orm";
-import pkg from 'pg';
-const { Pool } = pkg;
+import { Pool } from "@neondatabase/serverless";
 import session from "express-session";
 import connectPg from "connect-pg-simple";
 import { IStorage } from "./types";
@@ -10,25 +9,26 @@ import { InsertUser, InsertStore, InsertRating, User, Store, Rating } from "@sha
 
 const PostgresSessionStore = connectPg(session);
 
+if (!process.env.DATABASE_URL) {
+  throw new Error("DATABASE_URL environment variable is not set");
+}
+
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false,
+  },
 });
 
-export interface IStorage {
-  getUser(id: number): Promise<User | undefined>;
-  getUserByUsername(email: string): Promise<User | undefined>;
-  createUser(user: InsertUser): Promise<User>;
-  getAllUsers(): Promise<User[]>;
-  createStore(store: InsertStore): Promise<Store>;
-  getAllStores(): Promise<Store[]>;
-  getStore(id: number): Promise<Store | undefined>;
-  getStoresByOwner(ownerId: number): Promise<Store[]>;
-  createRating(rating: InsertRating): Promise<Rating>;
-  getRatingsByStore(storeId: number): Promise<Rating[]>;
-  getRatingByUserAndStore(userId: number, storeId: number): Promise<Rating | undefined>;
-  updateRating(id: number, rating: number): Promise<Rating | undefined>;
-  sessionStore: session.Store;
-}
+// Test the database connection
+pool.connect().then(() => {
+  console.log("Successfully connected to database");
+}).catch((err) => {
+  console.error("Failed to connect to database:", err);
+  console.error("Please check your DATABASE_URL and ensure your Neon database is accessible");
+  console.error("If using Neon, verify that your project is active and the credentials are correct");
+  process.exit(1);
+});
 
 export class DatabaseStorage implements IStorage {
   private db: ReturnType<typeof drizzle>;
@@ -43,77 +43,137 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getUser(id: number): Promise<User | undefined> {
-    const results = await this.db.select().from(users).where(eq(users.id, id));
-    return results[0];
+    try {
+      const results = await this.db.select().from(users).where(eq(users.id, id));
+      return results[0];
+    } catch (error) {
+      console.error("Error getting user:", error);
+      throw error;
+    }
   }
 
   async getUserByUsername(email: string): Promise<User | undefined> {
-    const results = await this.db.select().from(users).where(eq(users.email, email));
-    return results[0];
+    try {
+      const results = await this.db.select().from(users).where(eq(users.email, email));
+      return results[0];
+    } catch (error) {
+      console.error("Error getting user by email:", error);
+      throw error;
+    }
   }
 
   async createUser(user: InsertUser): Promise<User> {
-    const [result] = await this.db.insert(users).values(user).returning();
-    return result;
+    try {
+      const [result] = await this.db.insert(users).values(user).returning();
+      return result;
+    } catch (error) {
+      console.error("Error creating user:", error);
+      throw error;
+    }
   }
 
   async getAllUsers(): Promise<User[]> {
-    return await this.db.select().from(users);
+    try {
+      return await this.db.select().from(users);
+    } catch (error) {
+      console.error("Error getting all users:", error);
+      throw error;
+    }
   }
 
   async createStore(store: InsertStore): Promise<Store> {
-    const [result] = await this.db.insert(stores).values(store).returning();
-    return result;
+    try {
+      const [result] = await this.db.insert(stores).values(store).returning();
+      return result;
+    } catch (error) {
+      console.error("Error creating store:", error);
+      throw error;
+    }
   }
 
   async getAllStores(): Promise<Store[]> {
-    return await this.db.select().from(stores);
+    try {
+      return await this.db.select().from(stores);
+    } catch (error) {
+      console.error("Error getting all stores:", error);
+      throw error;
+    }
   }
 
   async getStore(id: number): Promise<Store | undefined> {
-    const results = await this.db.select().from(stores).where(eq(stores.id, id));
-    return results[0];
+    try {
+      const results = await this.db.select().from(stores).where(eq(stores.id, id));
+      return results[0];
+    } catch (error) {
+      console.error("Error getting store:", error);
+      throw error;
+    }
   }
 
   async getStoresByOwner(ownerId: number): Promise<Store[]> {
-    return await this.db.select().from(stores).where(eq(stores.ownerId, ownerId));
+    try {
+      return await this.db.select().from(stores).where(eq(stores.ownerId, ownerId));
+    } catch (error) {
+      console.error("Error getting stores by owner:", error);
+      throw error;
+    }
   }
 
   async createRating(rating: InsertRating): Promise<Rating> {
-    const [result] = await this.db.insert(ratings).values(rating).returning();
-    return result;
+    try {
+      const [result] = await this.db.insert(ratings).values(rating).returning();
+      return result;
+    } catch (error) {
+      console.error("Error creating rating:", error);
+      throw error;
+    }
   }
 
   async getRatingsByStore(storeId: number): Promise<Rating[]> {
-    return await this.db
-      .select()
-      .from(ratings)
-      .where(eq(ratings.storeId, storeId));
+    try {
+      return await this.db
+        .select()
+        .from(ratings)
+        .where(eq(ratings.storeId, storeId));
+    } catch (error) {
+      console.error("Error getting ratings by store:", error);
+      throw error;
+    }
   }
 
   async getRatingByUserAndStore(
     userId: number,
     storeId: number
   ): Promise<Rating | undefined> {
-    const results = await this.db
-      .select()
-      .from(ratings)
-      .where(
-        and(
-          eq(ratings.userId, userId),
-          eq(ratings.storeId, storeId)
-        )
-      );
-    return results[0];
+    try {
+      const results = await this.db
+        .select()
+        .from(ratings)
+        .where(
+          and(
+            eq(ratings.userId, userId),
+            eq(ratings.storeId, storeId)
+          )
+        );
+      return results[0];
+    } catch (error) {
+      console.error("Error getting rating by user and store:", error);
+      throw error;
+    }
   }
 
   async updateRating(id: number, rating: number): Promise<Rating | undefined> {
-    const [result] = await this.db
-      .update(ratings)
-      .set({ rating })
-      .where(eq(ratings.id, id))
-      .returning();
-    return result;
+    try {
+      const [result] = await this.db
+        .update(ratings)
+        .set({ rating })
+        .where(eq(ratings.id, id))
+        .returning();
+      return result;
+    } catch (error) {
+      console.error("Error updating rating:", error);
+      throw error;
+    }
   }
 }
 
