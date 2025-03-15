@@ -1,7 +1,7 @@
 import { drizzle } from "drizzle-orm/node-postgres";
 import { users, stores, ratings } from "@shared/schema";
 import { eq, and } from "drizzle-orm";
-import { Pool } from "pg";
+import { Pool } from "@neondatabase/serverless";
 import session from "express-session";
 import connectPg from "connect-pg-simple";
 import { IStorage } from "./types";
@@ -9,17 +9,15 @@ import { InsertUser, InsertStore, InsertRating, User, Store, Rating } from "@sha
 
 const PostgresSessionStore = connectPg(session);
 
-if (!process.env.PGHOST || !process.env.PGUSER || !process.env.PGPASSWORD || !process.env.PGDATABASE) {
-  throw new Error("Database configuration environment variables are not set properly");
+if (!process.env.DATABASE_URL) {
+  throw new Error("DATABASE_URL environment variable is not set");
 }
 
 const pool = new Pool({
-  host: process.env.PGHOST,
-  user: process.env.PGUSER,
-  password: process.env.PGPASSWORD,
-  database: process.env.PGDATABASE,
-  port: parseInt(process.env.PGPORT || "5432"),
-  ssl: false
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false,
+  },
 });
 
 // Test the database connection
@@ -27,6 +25,8 @@ pool.connect().then(() => {
   console.log("Successfully connected to database");
 }).catch((err) => {
   console.error("Failed to connect to database:", err);
+  console.error("Please check your DATABASE_URL and ensure your Neon database is accessible");
+  console.error("If using Neon, verify that your project is active and the credentials are correct");
   process.exit(1);
 });
 
@@ -178,3 +178,30 @@ export class DatabaseStorage implements IStorage {
 }
 
 export const storage = new DatabaseStorage();
+
+
+
+DATABASE_URL="postgresql://postgres:123@localhost:5432/store_ratings"
+PGHOST=localhost
+PGDATABASE=store_ratings
+PGUSER=postgres
+PGPORT=5432
+PGPASSWORD=123
+SESSION_SECRET=c73c1fb5d9632f254a850cf76210467b40be36c46f69931c077fe8070c9d47fd
+
+
+
+C:\Users\Intel\Desktop\STR\server\storage.ts:13
+  throw new Error("DATABASE_URL environment variable is not set");
+        ^
+
+
+Error: DATABASE_URL environment variable is not set
+    at <anonymous> (C:\Users\Intel\Desktop\STR\server\storage.ts:13:9)
+    at ModuleJob.run (node:internal/modules/esm/module_job:222:25)
+    at async ModuleLoader.import (node:internal/modules/esm/loader:323:24)
+    at async loadESM (node:internal/process/esm_loader:28:7)
+    at async handleMainPromise (node:internal/modules/run_main:113:12)
+
+Node.js v20.12.2
+PS C:\Users\Intel\Desktop\STR> 
