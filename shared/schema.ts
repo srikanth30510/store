@@ -27,7 +27,7 @@ export const ratings = pgTable("ratings", {
   rating: integer("rating").notNull(),
 });
 
-// Validation schemas
+
 export const insertUserSchema = createInsertSchema(users)
   .extend({
     name: z.string().min(20).max(60),
