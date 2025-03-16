@@ -7,7 +7,7 @@ import { insertStoreSchema, insertRatingSchema } from "@shared/schema";
 export async function registerRoutes(app: Express): Promise<Server> {
   setupAuth(app);
 
-  // Store routes
+
   app.get("/api/stores", async (req, res) => {
     const stores = await storage.getAllStores();
     res.json(stores);
@@ -25,7 +25,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.status(201).json(store);
   });
 
-  // Rating routes
+
   app.post("/api/stores/:storeId/ratings", async (req, res) => {
     if (!req.isAuthenticated()) {
       return res.sendStatus(401);
@@ -60,7 +60,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json(ratings);
   });
 
-  // User routes
   app.get("/api/users", async (req, res) => {
     if (!req.isAuthenticated() || req.user.role !== "admin") {
       return res.sendStatus(403);
