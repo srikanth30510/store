@@ -1,13 +1,14 @@
-#Store Rating Management System<br/>
-Clone the Repository<br/>
-Install Dependencies<br/>
+<b>Store Rating Management System</b><br/>
+<b>Steps To run the project</b></br/>
+<b> Step 1:</b>Clone the Repository<br/>
+<b> Step 2:</b>Install Dependencies<br/>
 npm install<br/>
-Configure Database Connection<br/>
-Open the .env file.<br/>
-Update database connection settings according to your local setup.<br/>
-Push Database Migrations<br/>
+<b> Step 3:</b>Configure Database Connection<br/>
+<b> Step 4:</b>Open the .env file.<br/>
+<b> Step 5:</b>Update database connection settings according to your local setup.<br/>
+<b> Step 6:</b>Push Database Migrations<br/>
 npm run db:push<br/>
-Run the Development Server<br/>
+<b> Step 7:</b>Run the Development Server<br/>
 npm run dev<br/>
 Here are the some screenshots:<br/>
 <b>Login page</b>->![image](https://github.com/user-attachments/assets/2fb7c0ef-600a-41cc-8dd5-23bc635b065e)<br/>
