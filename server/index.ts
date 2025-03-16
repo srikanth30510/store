@@ -3,7 +3,7 @@ import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 
-// Validate required environment variables
+
 const requiredEnvVars = ['DATABASE_URL', 'SESSION_SECRET'];
 for (const envVar of requiredEnvVars) {
   if (!process.env[envVar]) {
@@ -14,7 +14,7 @@ for (const envVar of requiredEnvVars) {
   }
 }
 
-// Log database configuration (without sensitive data)
+
 console.log('Database Configuration:');
 console.log('Host:', process.env.PGHOST);
 console.log('Database:', process.env.PGDATABASE);
