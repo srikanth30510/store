@@ -20,9 +20,7 @@ const pool = new Pool({
   password: process.env.PGPASSWORD,
   database: process.env.PGDATABASE,
   port: parseInt(process.env.PGPORT || "5432"),
-  ssl: {
-    rejectUnauthorized: false
-  }
+  ssl: process.env.PGHOST === "localhost" ? false : { rejectUnauthorized: false }, // Disable SSL for local database
 });
 
 // Test the database connection
