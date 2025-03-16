@@ -1,8 +1,8 @@
 <b>Store Rating Management System</b><br/>
-<b>Steps To run the project</b></br/>
+<b>Steps To run the project</b></br>
 <b> Step 1:</b>Clone the Repository<br/>
 <b> Step 2:</b>Install Dependencies<br/>
-npm install<br/>
+            npm install<br/>
 <b> Step 3:</b>Configure Database Connection<br/>
 <b> Step 4:</b>Open the .env file.<br/>
 <b> Step 5:</b>Update database connection settings according to your local setup.<br/>
